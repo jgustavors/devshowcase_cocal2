@@ -1,5 +1,6 @@
 package br.com.cocal_2.devshowcase.controller;
 
+import br.com.cocal_2.devshowcase.dto.FeedbackRequestDTO;
 import br.com.cocal_2.devshowcase.dto.ProjectRequestDTO;
 import br.com.cocal_2.devshowcase.dto.ProjectResponseDTO;
 import br.com.cocal_2.devshowcase.service.ProjectService;
@@ -30,5 +31,19 @@ public class ProjectController {
             Pageable pageable) {
         Page<ProjectResponseDTO> projetos = projectService.buscarTodos(technology, pageable);
         return ResponseEntity.ok(projetos);
+    }
+
+    @PostMapping("/{id}/feedbacks")
+    public ResponseEntity<ProjectResponseDTO> adicionarFeedback(
+            @PathVariable Long id,
+            @RequestBody @Valid FeedbackRequestDTO dto) {
+        ProjectResponseDTO response = projectService.adicionarFeedback(id, dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PutMapping("/{id}/upvote")
+    public ResponseEntity<ProjectResponseDTO> upvote(@PathVariable Long id) {
+        ProjectResponseDTO response = projectService.upvote(id);
+        return ResponseEntity.ok(response);
     }
 }
