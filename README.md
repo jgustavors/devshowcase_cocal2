@@ -7,7 +7,9 @@ API robusta desenvolvida em **Java 17** e **Spring Boot 3** para a plataforma De
 - **Spring Boot** (Web, Data JPA, Validation)
 - **Banco de Dados:** H2 Database (desenvolvimento) e PostgreSQL (produção/Supabase)
 - **Documentação:** Swagger / OpenAPI
-- **CI/CD:** GitHub Actions (Build & Test automatizados)
+- **Qualidade e Testes:** JUnit 5 e Mockito
+- **DevOps:** Docker (Multi-stage build) e GitHub Actions (CI/CD)
+- **Segurança/Integração:** CORS configurado para clientes Web
 
 ---
 
@@ -16,20 +18,38 @@ API robusta desenvolvida em **Java 17** e **Spring Boot 3** para a plataforma De
 ### Pré-requisitos
 - **JDK 17** instalado
 - Terminal ou IDE de sua preferência (VSCode, IntelliJ, Eclipse, STS)
+- Opcional: Docker instalado
 
-### Passos
-
+### Opção 1: Via Maven
 1. Clone o repositório:
    ```bash
    git clone https://github.com/jgustavors/devshowcase_cocal2.git
    cd devshowcase_cocal2
    ```
-
 2. Execute o projeto usando o Maven Wrapper:
    - No Windows: `.\mvnw.cmd spring-boot:run`
    - No Linux/Mac: `./mvnw spring-boot:run`
-
 3. A API estará rodando na porta `8080`.
+
+### Opção 2: Via Docker
+1. Gere o Build da imagem:
+   ```bash
+   docker build -t devshowcase-api .
+   ```
+2. Execute o container:
+   ```bash
+   docker run -p 8080:8080 devshowcase-api
+   ```
+
+---
+
+## 🧪 Rodando os Testes Automatizados
+
+O projeto possui testes unitários implementados com **JUnit 5 e Mockito** cobrindo regras de negócio (cálculos de avaliação e upvotes).
+Para rodar os testes localmente:
+```bash
+./mvnw test
+```
 
 ---
 
@@ -62,4 +82,4 @@ A aplicação está preparada para produção através de variáveis de ambiente
 
 ---
 
-*Desenvolvido como projeto prático para a disciplina de Back-end.* 🚀
+*Desenvolvido como projeto prático para a disciplina de Back-end com práticas de nível Pleno/Sênior.* 🚀
