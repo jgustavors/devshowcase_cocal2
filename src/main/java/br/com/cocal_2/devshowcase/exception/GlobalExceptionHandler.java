@@ -1,58 +1,42 @@
 package br.com.cocal_2.devshowcase.exception;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.time.Instant;
+import java.util.stream.Collectors;
 
-@RestControllerAdvice
+@ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, Object>> handleValidationErrors(MethodArgumentNotValidException ex) {
-        Map<String, String> campos = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach(error -> {
-            String campo = ((FieldError) error).getField();
-            String mensagem = error.getDefaultMessage();
-            campos.put(campo, mensagem);
-        });
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("status", 400);
-        response.put("erro", "Erro de validação nos campos informados.");
-        response.put("campos", campos);
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-    }
-
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<Map<String, Object>> handleEntityNotFound(EntityNotFoundException ex) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("status", 404);
-        response.put("erro", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    public ResponseEntity<StandardError> entityNotFound(EntityNotFoundException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.NOT_FOUND;
+        StandardError err = new StandardError(Instant.now(), status.value(), "Recurso não encontrado", e.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(status).body(err);
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException ex) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("status", 400);
-        response.put("erro", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<StandardError> validation(MethodArgumentNotValidException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        String message = e.getBindingResult().getFieldErrors().stream()
+                .map(FieldError::getDefaultMessage)
+                .collect(Collectors.joining("; "));
+        
+        StandardError err = new StandardError(Instant.now(), status.value(), "Erro de validação", message, request.getRequestURI());
+        return ResponseEntity.status(status).body(err);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, Object>> handleGenericError(Exception ex) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("status", 500);
-        response.put("erro", "Erro interno no servidor.");
-        response.put("detalhe", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    public ResponseEntity<StandardError> generic(Exception e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        StandardError err = new StandardError(Instant.now(), status.value(), "Erro interno do servidor", e.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(status).body(err);
     }
 }
