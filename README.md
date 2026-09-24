@@ -82,4 +82,4 @@ A aplicação está preparada para produção através de variáveis de ambiente
 
 ---
 
-*Desenvolvido como projeto prático para a disciplina de Back-end com práticas de nível Pleno/Sênior.* 🚀
+*Desenvolvido como projeto prático para a disciplina de Back-end.* 🚀
